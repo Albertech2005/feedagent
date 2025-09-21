@@ -112,7 +112,7 @@ export default function HomePage() {
 
                 </span>
               </div>
-              <span className="text-lg sm:text-xl font-bold text-white">eed</span>
+             
             </div>
 
             {/* Desktop Nav Icons */}
