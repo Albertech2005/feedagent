@@ -188,17 +188,18 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Action Buttons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             
-              href={feedbackUrl}
+             <a href={feedbackUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="block text-center px-4 py-2.5 sm:px-6 sm:py-3 bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-700 transition-all duration-200 border border-gray-600 text-sm sm:text-base"
-            <a>
+               >
+           
               View Feedback Page
             </a>
             
-              href={dashboardUrl}
+             <a href={dashboardUrl}
               className="block text-center px-4 py-2.5 sm:px-6 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-200 font-medium shadow-lg text-sm sm:text-base"
-            <a>
+            >
               Open Dashboard
             </a>
           </div>
