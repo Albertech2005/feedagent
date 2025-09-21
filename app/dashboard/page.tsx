@@ -154,7 +154,7 @@ export default function DashboardPage() {
                 Create your first feedback hub to get started
               </p>
               <button
-                onClick={() => router.push('/')}
+                onClick={() => router.push('/create')}
                 className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all"
               >
                 Create Your First Project
