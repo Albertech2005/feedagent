@@ -1,90 +1,56 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-// Debug: Log environment variables (remove in production)
-console.log('API Route - Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL)
-console.log('API Route - Supabase Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-
-export async function GET(request: Request) {
-  try {
-    // Check if environment variables exist
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.error('Missing Supabase environment variables in API route')
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      )
-    }
-
-    // Initialize Supabase
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    )
-
-    // Get user email from request if needed
-    // const { searchParams } = new URL(request.url)
-    // const email = searchParams.get('email')
-
-    // Fetch projects
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Supabase error in API route:', error)
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json(data || [])
-  } catch (err: any) {
-    console.error('API Route error:', err)
-    return NextResponse.json(
-      { error: err.message || 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
+import { supabase } from '@/lib/supabase'
+import { nanoid } from 'nanoid'
 
 export async function POST(request: Request) {
   try {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    const body = await request.json()
+    console.log('Received data:', body) // Debug log
+    
+    // Handle both field name formats
+    const owner_email = body.ownerEmail || body.owner_email
+    const name = body.name
+    const description = body.description
+    
+    // Check if we have the email
+    if (!owner_email) {
+      console.error('No owner email provided!')
       return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
+        { error: 'Email is required' },
+        { status: 400 }
       )
     }
-
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    )
-
-    const body = await request.json()
+    
+    const slug = `${name.toLowerCase().replace(/\s+/g, '-')}-${nanoid(6)}`
     
     const { data, error } = await supabase
       .from('projects')
-      .insert([body])
+      .insert([
+        {
+          name: name,
+          slug: slug,
+          description: description,
+          owner_email: owner_email // Make sure this matches your database column
+        }
+      ])
       .select()
       .single()
 
     if (error) {
-      console.error('Supabase insert error:', error)
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      )
+      console.error('Database error:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json(data)
-  } catch (err: any) {
-    console.error('API POST error:', err)
+    return NextResponse.json({ 
+      success: true, 
+      project: data,
+      ...data 
+    })
+    
+  } catch (error) {
+    console.error('Error creating project:', error)
     return NextResponse.json(
-      { error: err.message },
+      { error: 'Failed to create project' },
       { status: 500 }
     )
   }
