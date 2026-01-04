@@ -370,7 +370,7 @@ export default function HomePage() {
 
                   </span>
                 </div>
-                <span>© 2025 Feed. All rights reserved.</span>
+                <span>© 2026 Feed. All rights reserved.</span>
               </div>
              
             </div>
